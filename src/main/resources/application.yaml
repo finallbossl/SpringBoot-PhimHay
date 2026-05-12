@@ -1,0 +1,21 @@
+#spring.application.name=juanng
+#
+#spring.datasource.url=jdbc:postgresql://localhost:5432/movie_review
+#spring.datasource.username=postgres
+#spring.datasource.password=28122003
+#
+#spring.datasource.driver-class-name=org.postgresql.Driver
+#spring.jpa.hibernate.ddl-auto=update
+#spring.jpa.show-sql=true
+#
+server:
+  port: 8080
+  servlet:
+    context-path: /juanng
+
+
+spring:
+  datasource:
+    url: "jdbc:postgresql://localhost:5432/movie_review"
+    username: postgres
+    password: 28122003
