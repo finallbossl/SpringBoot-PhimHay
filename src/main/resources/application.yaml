@@ -13,9 +13,13 @@ server:
   servlet:
     context-path: /juanng
 
-
 spring:
   datasource:
-    url: "jdbc:postgresql://localhost:5432/movie_review"
+    url: jdbc:postgresql://localhost:5432/movie_review
     username: postgres
     password: 28122003
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
