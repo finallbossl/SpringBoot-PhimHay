@@ -12,6 +12,7 @@ import com.phimhay.juanng.modules.user.entity.*;
 import com.phimhay.juanng.modules.user.repository.AccessLogRepository;
 import com.phimhay.juanng.modules.user.repository.RefreshTokenRepository;
 import com.phimhay.juanng.modules.user.repository.RoleRepository;
+import com.phimhay.juanng.modules.user.mapper.UserMapper;
 import com.phimhay.juanng.modules.user.repository.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -35,6 +36,7 @@ public class AuthService {
     private final RoleRepository roleRepository;
     private final AccessLogRepository accessLogRepository;
     private final RefreshTokenRepository refreshTokenRepository;
+    private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
     private final AuthenticationManager authenticationManager;
@@ -101,15 +103,7 @@ public class AuthService {
         // 7. Lưu Refresh Token vào DB
         saveRefreshToken(user, refreshToken);
 
-        return AuthResponse.builder()
-                .accessToken(accessToken)
-                .refreshToken(refreshToken)
-                .id(user.getId())
-                .username(user.getUsername())
-                .email(user.getEmail())
-                .fullName(profiles.getFullName())
-                .avatarUrl(profiles.getAvatarUrl())
-                .build();
+        return userMapper.toAuthResponse(user, accessToken, refreshToken);
     }
 
     @Transactional
@@ -148,15 +142,7 @@ public class AuthService {
         // 5. Lưu Refresh Token vào DB
         saveRefreshToken(user, refreshToken);
 
-        return AuthResponse.builder()
-                .accessToken(accessToken)
-                .refreshToken(refreshToken)
-                .id(user.getId())
-                .username(user.getUsername())
-                .email(user.getEmail())
-                .fullName(user.getProfiles() != null ? user.getProfiles().getFullName() : user.getUsername())
-                .avatarUrl(user.getProfiles() != null ? user.getProfiles().getAvatarUrl() : null)
-                .build();
+        return userMapper.toAuthResponse(user, accessToken, refreshToken);
     }
 
     @Transactional
@@ -203,15 +189,7 @@ public class AuthService {
             // 7. Lưu Refresh Token mới vào DB
             saveRefreshToken(user, newRefreshToken);
 
-            return AuthResponse.builder()
-                    .accessToken(newAccessToken)
-                    .refreshToken(newRefreshToken)
-                    .id(user.getId())
-                    .username(user.getUsername())
-                    .email(user.getEmail())
-                    .fullName(user.getProfiles() != null ? user.getProfiles().getFullName() : user.getUsername())
-                    .avatarUrl(user.getProfiles() != null ? user.getProfiles().getAvatarUrl() : null)
-                    .build();
+            return userMapper.toAuthResponse(user, newAccessToken, newRefreshToken);
 
         } catch (Exception e) {
             if (e instanceof AppException) {

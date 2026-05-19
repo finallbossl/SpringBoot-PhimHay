@@ -7,6 +7,7 @@ import com.phimhay.juanng.modules.user.dto.UserResponse;
 import com.phimhay.juanng.modules.user.dto.UserUpdateRequest;
 import com.phimhay.juanng.modules.user.entity.User;
 import com.phimhay.juanng.modules.user.entity.UserProfiles;
+import com.phimhay.juanng.modules.user.mapper.UserMapper;
 import com.phimhay.juanng.modules.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -22,27 +23,7 @@ import java.util.stream.Collectors;
 public class UserService {
 
     private final UserRepository userRepository;
-
-    // Helper map từ User sang UserResponse
-    private UserResponse mapToUserResponse(User user) {
-        return UserResponse.builder()
-                .id(user.getId())
-                .username(user.getUsername())
-                .email(user.getEmail())
-                .fullName(user.getProfiles() != null ? user.getProfiles().getFullName() : user.getUsername())
-                .avatarUrl(user.getProfiles() != null ? user.getProfiles().getAvatarUrl() : null)
-                .isActive(user.isActive())
-                .isEmailVerified(user.isEmailVerified())
-                .isPremium(user.isPremium())
-                .premiumExpiredAt(user.getPremiumExpiredAt())
-                .provider(user.getProvider())
-                .roles(user.getRoles().stream()
-                        .map(role -> role.getRole().name())
-                        .collect(Collectors.toSet()))
-                .createdAt(user.getCreatedAt())
-                .updatedAt(user.getUpdatedAt())
-                .build();
-    }
+    private final UserMapper userMapper;
 
     // Lấy thông tin user hiện tại đang đăng nhập
     @Transactional(readOnly = true)
@@ -50,7 +31,7 @@ public class UserService {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new AppException(ResultCode.USER_NOT_FOUND));
-        return mapToUserResponse(user);
+        return userMapper.toUserResponse(user);
     }
 
     // Cập nhật thông tin profile của user hiện tại đang đăng nhập
@@ -74,14 +55,14 @@ public class UserService {
         }
 
         userRepository.save(user);
-        return mapToUserResponse(user);
+        return userMapper.toUserResponse(user);
     }
 
     // Admin: Lấy danh sách tất cả người dùng
     @Transactional(readOnly = true)
     public List<UserResponse> getAllUsers() {
         return userRepository.findAll().stream()
-                .map(this::mapToUserResponse)
+                .map(userMapper::toUserResponse)
                 .collect(Collectors.toList());
     }
 
@@ -90,7 +71,7 @@ public class UserService {
     public UserResponse getUserById(String id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new AppException(ResultCode.USER_NOT_FOUND));
-        return mapToUserResponse(user);
+        return userMapper.toUserResponse(user);
     }
 
     // Admin: Khóa hoặc mở khóa tài khoản
@@ -100,7 +81,7 @@ public class UserService {
                 .orElseThrow(() -> new AppException(ResultCode.USER_NOT_FOUND));
         user.setActive(isActive);
         userRepository.save(user);
-        return mapToUserResponse(user);
+        return userMapper.toUserResponse(user);
     }
 
     // Admin: Nâng cấp hoặc thu hồi gói Premium/VIP
@@ -123,6 +104,6 @@ public class UserService {
         }
 
         userRepository.save(user);
-        return mapToUserResponse(user);
+        return userMapper.toUserResponse(user);
     }
 }
