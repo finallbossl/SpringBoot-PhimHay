@@ -1,5 +1,6 @@
 package com.phimhay.juanng.modules.user.dto;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -9,12 +10,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class AuthResponse {
-    private String accessToken;
+public class RefreshTokenRequest {
+    @NotBlank(message = "Refresh token không được để trống")
     private String refreshToken;
-    private String id;
-    private String username;
-    private String email;
-    private String fullName;
-    private String avatarUrl;
 }

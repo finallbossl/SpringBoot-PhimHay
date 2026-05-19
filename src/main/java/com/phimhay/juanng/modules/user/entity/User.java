@@ -8,6 +8,8 @@ import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import com.phimhay.juanng.common.utils.UlidHelper;
+
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
@@ -22,8 +24,14 @@ import java.util.Set;
 @Builder
 public class User {
     @Id
-    @GeneratedValue(strategy =  GenerationType.UUID)
     private String id;
+
+    @PrePersist
+    public void ensureId() {
+        if (id == null) {
+            id = UlidHelper.nextUlid();
+        }
+    }
 
     @Column(unique = true, nullable = false)
     @NotBlank(message = "UserName không được để trống.")
