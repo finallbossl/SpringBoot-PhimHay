@@ -56,6 +56,24 @@ public class User {
     @Builder.Default
     private boolean isActive = true;
 
+    @Column(name = "is_email_verified", nullable = false)
+    @Builder.Default
+    private boolean isEmailVerified = false;
+
+    @Column(name = "is_premium", nullable = false)
+    @Builder.Default
+    private boolean isPremium = false;
+
+    @Column(name = "premium_expired_at")
+    private LocalDateTime premiumExpiredAt;
+
+    @Column(name = "provider", length = 20)
+    @Builder.Default
+    private String provider = "LOCAL"; // LOCAL, GOOGLE, FACEBOOK
+
+    @Column(name = "provider_id")
+    private String providerId;
+
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "user_roles",
