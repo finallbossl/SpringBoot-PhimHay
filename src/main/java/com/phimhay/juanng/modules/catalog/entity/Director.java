@@ -21,6 +21,9 @@ public class Director {
     @Column(nullable = false, unique = true)
     private String slug;
 
+    @Column(name = "avatar_url", length = 512)
+    private String avatarUrl;
+
     @PrePersist
     public void ensureId() {
         if (id == null) {

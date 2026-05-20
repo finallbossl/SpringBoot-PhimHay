@@ -78,6 +78,10 @@ public class Movie {
     @Builder.Default
     private boolean subDocquyen = false;
 
+    @Column(name = "is_premium_only")
+    @Builder.Default
+    private boolean isPremiumOnly = false;
+
     // TMDB metadata
     @Column(name = "tmdb_id")
     private String tmdbId;
