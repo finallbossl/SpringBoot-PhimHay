@@ -1,6 +1,7 @@
 package com.phimhay.juanng.modules.catalog.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
@@ -10,6 +11,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class ExternalMovieResponse {
     private boolean status;
     private String msg;
@@ -19,6 +21,7 @@ public class ExternalMovieResponse {
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
+    @JsonIgnoreProperties(ignoreUnknown = true)
     public static class MovieDto {
         private TmdbDto tmdb;
         private ImdbDto imdb;
@@ -75,6 +78,7 @@ public class ExternalMovieResponse {
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
+    @JsonIgnoreProperties(ignoreUnknown = true)
     public static class TmdbDto {
         private String type;
         private String id;
@@ -89,6 +93,7 @@ public class ExternalMovieResponse {
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
+    @JsonIgnoreProperties(ignoreUnknown = true)
     public static class ImdbDto {
         private String id;
     }
@@ -96,6 +101,7 @@ public class ExternalMovieResponse {
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
+    @JsonIgnoreProperties(ignoreUnknown = true)
     public static class CategoryDto {
         private Long id;
         private String name;
@@ -105,6 +111,7 @@ public class ExternalMovieResponse {
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
+    @JsonIgnoreProperties(ignoreUnknown = true)
     public static class CountryDto {
         private Long id;
         private String name;
@@ -114,6 +121,7 @@ public class ExternalMovieResponse {
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
+    @JsonIgnoreProperties(ignoreUnknown = true)
     public static class EpisodeServerDto {
         @JsonProperty("server_name")
         private String serverName;
@@ -125,6 +133,7 @@ public class ExternalMovieResponse {
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
+    @JsonIgnoreProperties(ignoreUnknown = true)
     public static class EpisodeDataDto {
         private String name;
         private String slug;

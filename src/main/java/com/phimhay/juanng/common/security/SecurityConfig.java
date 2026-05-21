@@ -31,7 +31,10 @@ public class SecurityConfig {
         http
                 .csrf(AbstractHttpConfigurer::disable) // Tắt bảo vệ CSRF (Vì dùng JWT không xài cookie)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/**", "/catalog/sync/**").permitAll() // TỰ DO: Mọi API bắt đầu bằng /auth/ hoặc /catalog/sync/ ai cũng vào được
+                        .requestMatchers("/auth/**").permitAll() // TỰ DO: Mọi API bắt đầu bằng /auth/ ai cũng vào được
+                        .requestMatchers(org.springframework.http.HttpMethod.POST, "/catalog/**", "/streaming/**").hasRole("ADMIN") // Thêm mới phim/tập phim phải là ADMIN
+                        .requestMatchers(org.springframework.http.HttpMethod.PUT, "/catalog/**", "/streaming/**").hasRole("ADMIN") // Cập nhật phim/tập phim phải là ADMIN
+                        .requestMatchers(org.springframework.http.HttpMethod.DELETE, "/catalog/**", "/streaming/**").hasRole("ADMIN") // Xóa phim/tập phim phải là ADMIN
                         .anyRequest().authenticated() // BẮT BUỘC: Mọi API còn lại đều phải có thẻ JWT hợp lệ mới cho vào
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // Chế độ không lưu phiên (Stateless)

@@ -1,0 +1,78 @@
+{
+    "status": true,
+    "msg": "",
+    "movie": {
+        "tmdb": {
+            "type": "movie",
+            "id": "1180702",
+            "season": null,
+            "vote_average": "5.4",
+            "vote_count": 75
+        },
+        "imdb": {
+            "id": "tt29288566"
+        },
+        "_id": 48068,
+        "name": "Những Cô Gái Dễ Thương",
+        "origin_name": "Nice Girls",
+        "slug": "nhung-co-gai-de-thuong",
+        "content": "<p>Khi một sĩ quan cảnh sát lập dị bị sát hại ở Munich, Léo Léo, một thám tử cảnh sát của Riviera nóng nảy và vô kỷ luật...</p>",
+        "type": "single",
+        "status": "completed",
+        "poster_url": "https://img.phim.com/nice-girls-poster.jpg",
+        "thumb_url": "https://img.phim.com/nice-girls-thumb.jpg",
+        "is_copyright": false,
+        "trailer_url": "https://youtube.com/watch?v=nice-girls",
+        "time": "90 phút",
+        "episode_current": "Full",
+        "episode_total": "1",
+        "quality": "FHD",
+        "lang": "Vietsub",
+        "showtimes": "",
+        "year": 2024,
+        "view": 100,
+        "chieurap": false,
+        "sub_docquyen": false,
+        "actor": [
+            "Alice Taglioni",
+            "Stéfi Celma",
+            "Baptiste Lecaplain"
+        ],
+        "director": [
+            "Noémie Saglio"
+        ],
+        "category": [
+            {
+                "id": 1,
+                "name": "Hành Động",
+                "slug": "hanh-dong"
+            },
+            {
+                "id": 2,
+                "name": "Hài Hước",
+                "slug": "hai-huoc"
+            }
+        ],
+        "country": [
+            {
+                "id": 1,
+                "name": "Pháp",
+                "slug": "phap"
+            }
+        ]
+    },
+    "episodes": [
+        {
+            "server_name": "Vietsub #1",
+            "server_data": [
+                {
+                    "name": "Full",
+                    "slug": "full",
+                    "filename": "nice-girls-full",
+                    "link_embed": "https://embed.phim.com/nice-girls",
+                    "link_m3u8": "https://m3u8.phim.com/nice-girls/index.m3u8"
+                }
+            ]
+        }
+    ]
+}
