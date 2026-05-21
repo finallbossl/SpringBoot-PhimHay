@@ -31,7 +31,7 @@ public class SecurityConfig {
         http
                 .csrf(AbstractHttpConfigurer::disable) // Tắt bảo vệ CSRF (Vì dùng JWT không xài cookie)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/**").permitAll() // TỰ DO: Mọi API bắt đầu bằng /auth/ (login, register) ai cũng vào được
+                        .requestMatchers("/auth/**", "/catalog/sync/**").permitAll() // TỰ DO: Mọi API bắt đầu bằng /auth/ hoặc /catalog/sync/ ai cũng vào được
                         .anyRequest().authenticated() // BẮT BUỘC: Mọi API còn lại đều phải có thẻ JWT hợp lệ mới cho vào
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // Chế độ không lưu phiên (Stateless)
