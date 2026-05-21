@@ -1,16 +1,23 @@
 package com.phimhay.juanng;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.phimhay.juanng.modules.catalog.dto.ExternalMovieListResponse;
 import com.phimhay.juanng.modules.catalog.dto.ExternalMovieResponse;
 import com.phimhay.juanng.modules.catalog.entity.Movie;
+import com.phimhay.juanng.modules.catalog.entity.SyncSource;
 import com.phimhay.juanng.modules.catalog.repository.*;
+import com.phimhay.juanng.modules.catalog.service.MovieCrawlerService;
 import com.phimhay.juanng.modules.catalog.service.MovieSyncService;
 import com.phimhay.juanng.modules.streaming.repository.EpisodeRepository;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.web.client.RestTemplate;
 
 import java.io.InputStream;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -19,6 +26,8 @@ class JuanngApplicationTests {
 
 	@Autowired
 	private MovieSyncService movieSyncService;
+	@Autowired
+	private MovieCrawlerService movieCrawlerService;
 	@Autowired
 	private MovieRepository movieRepository;
 	@Autowired
@@ -31,7 +40,11 @@ class JuanngApplicationTests {
 	private CategoryRepository categoryRepository;
 	@Autowired
 	private CountryRepository countryRepository;
-	
+	@Autowired
+	private SyncSourceRepository syncSourceRepository;
+	@Autowired
+	private RestTemplate originalRestTemplate;
+
 	private final ObjectMapper objectMapper = new ObjectMapper();
 
 	@Test
@@ -80,5 +93,94 @@ class JuanngApplicationTests {
 		}
 	}
 
+	@Test
+	void testSyncSourceCRUD() {
+		// Create
+		SyncSource source = SyncSource.builder()
+				.name("test_crud_source")
+				.listUrlPattern("http://example.com/list?page={page}")
+				.detailUrlBase("http://example.com/detail/")
+				.isActive(true)
+				.build();
+		SyncSource saved = syncSourceRepository.save(source);
+		assertNotNull(saved.getId());
+		assertEquals("test_crud_source", saved.getName());
+
+		// Read
+		SyncSource retrieved = syncSourceRepository.findById(saved.getId()).orElse(null);
+		assertNotNull(retrieved);
+		assertEquals("http://example.com/detail/", retrieved.getDetailUrlBase());
+
+		// Update
+		retrieved.setName("test_crud_source_updated");
+		SyncSource updated = syncSourceRepository.save(retrieved);
+		assertEquals("test_crud_source_updated", updated.getName());
+
+		// Delete
+		syncSourceRepository.delete(updated);
+		assertFalse(syncSourceRepository.findById(saved.getId()).isPresent());
+	}
+
+	@Test
+	void testMovieCrawlerAndFetch() throws Exception {
+		// 1. Tạo nguồn phim thử nghiệm
+		SyncSource source = SyncSource.builder()
+				.name("vsmov_test_crawler")
+				.listUrlPattern("https://vsmov_mock.com/api/list?page={page}")
+				.detailUrlBase("https://vsmov_mock.com/api/detail/")
+				.isActive(true)
+				.build();
+		source = syncSourceRepository.save(source);
+
+		// 2. Thiết lập RestTemplate giả lập (Mock)
+		RestTemplate mockRestTemplate = Mockito.mock(RestTemplate.class);
+		ReflectionTestUtils.setField(movieCrawlerService, "restTemplate", mockRestTemplate);
+
+		try (InputStream listIs = getClass().getResourceAsStream("/test_list_payload.json");
+			 InputStream detailIs = getClass().getResourceAsStream("/test_payload.json")) {
+
+			assertNotNull(listIs);
+			assertNotNull(detailIs);
+
+			ExternalMovieListResponse mockListResponse = objectMapper.readValue(listIs, ExternalMovieListResponse.class);
+			ExternalMovieResponse mockDetailResponse = objectMapper.readValue(detailIs, ExternalMovieResponse.class);
+
+			// Mock các cuộc gọi REST
+			Mockito.when(mockRestTemplate.getForObject(
+					"https://vsmov_mock.com/api/list?page=1",
+					ExternalMovieListResponse.class)
+			).thenReturn(mockListResponse);
+
+			Mockito.when(mockRestTemplate.getForObject(
+					"https://vsmov_mock.com/api/detail/nhung-co-gai-de-thuong",
+					ExternalMovieResponse.class)
+			).thenReturn(mockDetailResponse);
+
+			// 3. Kiểm thử fetchMovieList (chỉ lấy xem trước, không lưu DB)
+			ExternalMovieListResponse listResult = movieCrawlerService.fetchMovieList(source.getId(), 1);
+			assertNotNull(listResult);
+			assertTrue(listResult.isStatus());
+			assertEquals(1, listResult.getItems().size());
+			assertEquals("nhung-co-gai-de-thuong", listResult.getItems().get(0).getSlug());
+
+			// 4. Kiểm thử crawlPage (lấy danh sách và tự động đồng bộ)
+			List<String> successSlugs = movieCrawlerService.crawlPage(source.getId(), 1);
+			assertEquals(1, successSlugs.size());
+			assertEquals("nhung-co-gai-de-thuong", successSlugs.get(0));
+
+			// Xác nhận phim đã được lưu vào DB
+			var movieOpt = movieRepository.findBySlug("nhung-co-gai-de-thuong");
+			assertTrue(movieOpt.isPresent());
+			assertEquals("Những Cô Gái Dễ Thương", movieOpt.get().getName());
+
+		} finally {
+			// Khôi phục RestTemplate ban đầu
+			ReflectionTestUtils.setField(movieCrawlerService, "restTemplate", originalRestTemplate);
+			// Xóa nguồn phim test
+			syncSourceRepository.delete(source);
+		}
+	}
+
 }
+
 

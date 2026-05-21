@@ -1,0 +1,15 @@
+{
+  "status": true,
+  "items": [
+    {
+      "name": "Những Cô Gái Dễ Thương",
+      "slug": "nhung-co-gai-de-thuong"
+    }
+  ],
+  "pagination": {
+    "totalItems": 1,
+    "totalItemsPerPage": 10,
+    "currentPage": 1,
+    "totalPages": 1
+  }
+}

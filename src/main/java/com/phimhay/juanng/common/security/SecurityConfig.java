@@ -32,6 +32,7 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable) // Tắt bảo vệ CSRF (Vì dùng JWT không xài cookie)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/**").permitAll() // TỰ DO: Mọi API bắt đầu bằng /auth/ ai cũng vào được
+                        .requestMatchers("/catalog/sync/**").hasRole("ADMIN") // Chỉ ADMIN mới có quyền truy cập API đồng bộ & cấu hình nguồn
                         .requestMatchers(org.springframework.http.HttpMethod.POST, "/catalog/**", "/streaming/**").hasRole("ADMIN") // Thêm mới phim/tập phim phải là ADMIN
                         .requestMatchers(org.springframework.http.HttpMethod.PUT, "/catalog/**", "/streaming/**").hasRole("ADMIN") // Cập nhật phim/tập phim phải là ADMIN
                         .requestMatchers(org.springframework.http.HttpMethod.DELETE, "/catalog/**", "/streaming/**").hasRole("ADMIN") // Xóa phim/tập phim phải là ADMIN
