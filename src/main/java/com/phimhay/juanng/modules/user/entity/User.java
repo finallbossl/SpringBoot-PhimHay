@@ -53,14 +53,15 @@ public class User {
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
+    @Column(name = "is_active", nullable = false, columnDefinition = "boolean default true")
     @Builder.Default
     private boolean isActive = true;
 
-    @Column(name = "is_email_verified", nullable = false)
+    @Column(name = "is_email_verified", nullable = false, columnDefinition = "boolean default false")
     @Builder.Default
     private boolean isEmailVerified = false;
 
-    @Column(name = "is_premium", nullable = false)
+    @Column(name = "is_premium", nullable = false, columnDefinition = "boolean default false")
     @Builder.Default
     private boolean isPremium = false;
 

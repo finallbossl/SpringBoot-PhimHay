@@ -9,9 +9,13 @@ import com.phimhay.juanng.modules.catalog.repository.*;
 import com.phimhay.juanng.modules.catalog.service.MovieCrawlerService;
 import com.phimhay.juanng.modules.catalog.service.MovieSyncService;
 import com.phimhay.juanng.modules.streaming.repository.EpisodeRepository;
+import com.phimhay.juanng.modules.user.entity.RoleType;
+import com.phimhay.juanng.modules.user.entity.User;
+import com.phimhay.juanng.modules.user.repository.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.client.RestTemplate;
@@ -44,11 +48,29 @@ class JuanngApplicationTests {
 	private SyncSourceRepository syncSourceRepository;
 	@Autowired
 	private RestTemplate originalRestTemplate;
+	@Autowired
+	private UserRepository userRepository;
+
+	@Value("${app.admin.email}")
+	private String adminEmail;
 
 	private final ObjectMapper objectMapper = new ObjectMapper();
 
 	@Test
 	void contextLoads() {
+	}
+
+	@Test
+	void testAdminUserSeeding() {
+		var adminOpt = userRepository.findByEmail(adminEmail);
+		assertTrue(adminOpt.isPresent(), "Tài khoản admin " + adminEmail + " phải tồn tại");
+		User admin = adminOpt.get();
+		assertEquals("nguyenluan", admin.getUsername());
+		assertTrue(admin.isActive(), "Tài khoản admin phải active");
+		assertTrue(admin.isEmailVerified(), "Tài khoản admin phải verified email");
+		assertTrue(admin.isPremium(), "Tài khoản admin phải premium");
+		assertTrue(admin.getRoles().stream().anyMatch(r -> r.getRole() == RoleType.ADMIN), "Tài khoản admin phải có quyền ADMIN");
+		assertTrue(admin.getRoles().stream().anyMatch(r -> r.getRole() == RoleType.USER), "Tài khoản admin phải có quyền USER");
 	}
 
 	@Test
